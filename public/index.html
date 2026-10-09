@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TaskMentor.ai - Enterprise Onboarding & Mentorship Copilot</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    code, pre, .font-mono { font-family: 'JetBrains Mono', monospace; }
+    .perspective-grid {
+      background-size: 40px 40px;
+      background-image: 
+        linear-gradient(to right, rgba(99, 102, 241, 0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(99, 102, 241, 0.05) 1px, transparent 1px);
+    }
+    .scrollbar-none::-webkit-scrollbar { display: none; }
+    .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen antialiased flex flex-col selection:bg-indigo-500 selection:text-white relative">
+  <!-- Ambience background -->
+  <div class="fixed inset-0 perspective-grid pointer-events-none opacity-40"></div>
+  <div class="fixed top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[350px] bg-indigo-600/10 blur-[130px] rounded-full pointer-events-none"></div>
+
+  <!-- HEADER -->
+  <header class="sticky top-0 z-40 w-full border-b border-slate-800 bg-slate-900/90 backdrop-blur-md px-4 sm:px-6 py-3">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-emerald-400 p-[1px] shadow-lg shadow-indigo-500/20 flex items-center justify-center shrink-0">
+          <div class="w-full h-full bg-slate-900 rounded-[11px] flex items-center justify-center text-indigo-400">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+          </div>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-extrabold text-base sm:text-lg tracking-tight bg-gradient-to-r from-white via-slate-200 to-indigo-300 bg-clip-text text-transparent">
+              TaskMentor<span class="text-indigo-400">.ai</span>
+            </span>
+            <span class="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 font-mono">
+              Copilot v2.4
+            </span>
+          </div>
+          <p class="text-xs text-slate-400 hidden sm:block">AI-Driven Onboarding, Micro-Tasks & Live Mentorship</p>
+        </div>
+      </div>
+
+      <!-- VIEW TOGGLE -->
+      <div class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800 shadow-inner">
+        <button id="btnSwitchMobile" onclick="switchView('mobile')" class="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-xs font-semibold bg-indigo-600 text-white shadow-md shadow-indigo-600/30 transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+          <span>Employee Mobile App</span>
+          <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        </button>
+        <button id="btnSwitchDesktop" onclick="switchView('desktop')" class="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/></svg>
+          <span>Manager Dashboard</span>
+          <span class="hidden sm:inline text-[10px] bg-slate-800 text-slate-300 px-1.5 py-0.5 rounded font-mono font-bold">14 Active</span>
+        </button>
+      </div>
+
+      <!-- BADGES -->
+      <div class="hidden md:flex items-center gap-2.5">
+        <div class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-800/80 border border-indigo-500/30 text-xs">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span class="text-slate-300 font-mono text-[11px]">API: <b class="text-emerald-400">localhost:8000</b></span>
+        </div>
+        <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800/80 border border-slate-700/60 text-xs">
+          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+          <span class="text-slate-300 font-mono text-[11px]">Auto-Lock: <b class="text-emerald-400">Active</b></span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- TOAST CONTAINER -->
+  <div id="toastContainer" class="fixed top-16 right-4 z-50 flex flex-col gap-2 max-w-sm"></div>
+
+  <!-- MAIN WRAPPER -->
+  <main class="flex-1 relative overflow-x-hidden flex flex-col justify-start">
+    <!-- MOBILE VIEW -->
+    <section id="viewMobile" class="w-full flex-1 flex flex-col items-center justify-center p-3 sm:p-6 transition-all duration-300">
+      <div class="text-center mb-3">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-slate-900 border border-indigo-500/30 text-indigo-300 shadow-sm">
+          <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          Simulated Employee View: Live micro-tasks connected to Backend API
+        </span>
+      </div>
+
+      <!-- IPHONE SHELL -->
+      <div class="relative w-full max-w-[390px] h-[820px] max-h-[92vh] bg-slate-900 rounded-[46px] overflow-hidden flex flex-col border-[6px] border-slate-800 shadow-2xl">
+        <!-- Dynamic Island -->
+        <div class="absolute top-2.5 left-1/2 transform -translate-x-1/2 z-50 bg-black rounded-full flex items-center justify-between px-2.5 w-32 h-6.5 cursor-pointer">
+          <div class="w-2.5 h-2.5 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center">
+            <div class="w-1 h-1 rounded-full bg-indigo-500/80"></div>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <span class="text-[9px] font-mono font-bold text-emerald-400">AI</span>
+            <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+            <span class="text-[9px] text-slate-300 font-mono">Copilot</span>
+          </div>
+        </div>
+
+        <!-- Status Bar -->
+        <div class="pt-2 px-6 flex justify-between items-center text-[11px] font-semibold text-slate-400 shrink-0 z-40 bg-slate-900/60 backdrop-blur">
+          <span class="font-mono text-slate-200">09:41</span>
+          <div class="flex items-center gap-1.5">
+            <span class="text-emerald-400 font-mono text-[10px]">5G</span>
+            <div class="w-4 h-2 rounded-sm border border-emerald-400 bg-emerald-400/80"></div>
+          </div>
+        </div>
+
+        <!-- Inner Scroll -->
+        <div class="flex-1 overflow-y-auto px-4 pb-20 pt-3 relative scroll-smooth scrollbar-none">
+          <!-- Profile Header -->
+          <div class="bg-gradient-to-br from-slate-800/90 via-slate-850 to-slate-900 rounded-2xl p-3.5 border border-slate-700/70 shadow-lg relative overflow-hidden">
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center gap-2.5">
+                <div class="w-11 h-11 rounded-full bg-gradient-to-tr from-indigo-500 to-emerald-400 p-0.5">
+                  <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80" alt="Ali" class="w-full h-full object-cover rounded-full border border-slate-900" />
+                </div>
+                <div>
+                  <h3 class="font-bold text-sm text-white tracking-tight flex items-center gap-1.5">
+                    Ali Mammadov <span class="text-[10px] font-mono px-1 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">AZ</span>
+                  </h3>
+                  <p class="text-xs text-indigo-300 font-medium">Junior Specialist • Legal Ops</p>
+                </div>
+              </div>
+              <div class="flex flex-col items-end">
+                <div class="flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 font-bold text-xs">
+                  <span id="mobileXpDisplay">350 XP</span>
+                </div>
+                <span class="text-[9px] text-slate-400 mt-0.5">Rank #2 in Team</span>
+              </div>
+            </div>
+            <!-- Progress Bar -->
+            <div class="bg-slate-900/80 rounded-xl p-2 border border-slate-800">
+              <div class="flex justify-between items-center text-[10px] mb-1">
+                <span class="font-bold text-slate-300">Level 4 Onboarder</span>
+                <span class="text-indigo-400 font-mono">150 XP to Level 5</span>
+              </div>
+              <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                <div class="bg-gradient-to-r from-indigo-500 to-emerald-400 h-full rounded-full" style="width: 70%"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Active Task Card -->
+          <div class="mt-4 bg-slate-850 rounded-2xl p-4 border border-indigo-500/30 shadow-xl relative overflow-hidden">
+            <div class="flex items-center justify-between gap-2 mb-2">
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-rose-500/15 border border-rose-500/30 text-rose-400">🔥 High Priority</span>
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold bg-indigo-500/15 border border-indigo-500/30 text-indigo-300">🔒 Locked • Anti-Hoarding On</span>
+            </div>
+            <h4 class="text-base font-bold text-white leading-snug">Prepare B2B Contract Template</h4>
+            <p class="text-xs text-slate-400 mt-1">Fill the enterprise Master Services Agreement (MSA) boilerplate with verified SOC-2 and SLA Clause 4.</p>
+
+            <!-- Countdown Timer -->
+            <div class="mt-3 p-2.5 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between">
+              <div>
+                <div class="text-[10px] text-slate-400 uppercase font-mono">Time Remaining</div>
+                <div id="countdownTimer" class="font-mono text-sm font-bold text-amber-300 tracking-wide">01:24:07 <span class="text-[10px] text-slate-400 font-normal">/ 02:30:00</span></div>
+              </div>
+              <span class="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20 font-mono">+50 XP</span>
+            </div>
+
+            <!-- Checkpoint Slider -->
+            <div class="mt-3.5 space-y-1.5">
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-slate-400 text-[11px]">Progress Checkpoint</span>
+                <span id="sliderValueText" class="font-mono font-bold text-indigo-300 text-xs">40% Completed</span>
+              </div>
+              <input id="progressRange" type="range" min="0" max="100" value="40" oninput="updateProgress(this.value)" class="w-full h-2 bg-slate-900 rounded-lg appearance-none cursor-pointer accent-indigo-500">
+              <div class="flex justify-between text-[9px] text-slate-400 font-mono">
+                <span>Drafting</span>
+                <span>Reviewing</span>
+                <span class="text-emerald-400 font-bold">AI Proof</span>
+              </div>
+            </div>
+
+            <!-- Action Buttons Grid (Connected to Backend Endpoints) -->
+            <div class="mt-4 pt-3 border-t border-slate-800/80 space-y-2">
+              <!-- AI Mentor CTA -->
+              <button onclick="openMentorDrawer()" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 text-white font-semibold text-xs shadow-lg shadow-indigo-600/30 transition cursor-pointer">
+                <span class="flex items-center gap-2">
+                  <svg class="w-4 h-4 text-indigo-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+                  Ask AI Mentor for Help
+                </span>
+                <span class="text-[10px] font-mono bg-indigo-500/40 px-1.5 py-0.5 rounded text-indigo-100 flex items-center gap-1">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+                  /api/ask-mentor
+                </span>
+              </button>
+
+              <div class="grid grid-cols-3 gap-1.5">
+                <button onclick="openExtensionModal()" class="flex flex-col items-center justify-center py-2 px-1 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 text-[11px] font-semibold transition cursor-pointer">
+                  <span class="text-amber-400 mb-0.5">⏱️</span>
+                  <span>Extension</span>
+                </button>
+                <button onclick="triggerDecomposeTask()" class="flex flex-col items-center justify-center py-2 px-1 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 text-[11px] font-semibold transition cursor-pointer">
+                  <span class="text-indigo-400 mb-0.5">🧩</span>
+                  <span>Decompose</span>
+                </button>
+                <button onclick="openVisionModal()" class="flex flex-col items-center justify-center py-2 px-1 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 text-[11px] font-semibold transition cursor-pointer">
+                  <span class="text-emerald-400 mb-0.5">📷</span>
+                  <span>Proof</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Queue List -->
+          <div class="mt-4">
+            <h5 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Auto-Queue Pipeline (3)</h5>
+            <div id="queuedTasksList" class="space-y-2">
+              <div class="p-3 bg-slate-900 rounded-xl border border-slate-800 text-xs">
+                <div class="flex justify-between font-bold text-white mb-1">
+                  <span>1. Audit SOC-2 Sub-processor List</span>
+                  <span class="text-indigo-400 font-mono">+40 XP</span>
+                </div>
+                <p class="text-[11px] text-slate-400">Next in pipeline when current task passes AI Verification.</p>
+              </div>
+              <div class="p-3 bg-slate-900 rounded-xl border border-slate-800 text-xs">
+                <div class="flex justify-between font-bold text-white mb-1">
+                  <span>2. Vendor DPA Compliance Checklist</span>
+                  <span class="text-indigo-400 font-mono">+35 XP</span>
+                </div>
+                <p class="text-[11px] text-slate-400">Cross-reference GDPR standard clauses against template library.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MENTOR DRAWER -->
+        <div id="mentorDrawer" class="absolute inset-x-0 bottom-0 z-50 transform translate-y-full transition-transform duration-300 ease-out bg-slate-900 border-t-2 border-indigo-500 rounded-t-3xl shadow-2xl flex flex-col h-[82%]">
+          <div class="p-3.5 bg-slate-950 border-b border-slate-800 flex items-center justify-between rounded-t-3xl shrink-0">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-600 to-emerald-400 flex items-center justify-center p-0.5">
+                <div class="w-full h-full bg-slate-900 rounded-full flex items-center justify-center text-indigo-400 text-xs">🤖</div>
+              </div>
+              <div>
+                <div class="text-xs font-bold text-white flex items-center gap-1.5">
+                  AI Mentor Copilot
+                  <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                  <span class="text-[9px] font-mono text-indigo-400 px-1 py-0.5 rounded bg-indigo-950/60 border border-indigo-500/30">/api/ask-mentor</span>
+                </div>
+                <div class="text-[10px] text-slate-400 truncate max-w-[200px]">Context: Prepare B2B Contract Template</div>
+              </div>
+            </div>
+            <button onclick="closeMentorDrawer()" class="p-1.5 rounded-lg text-slate-400 hover:text-white cursor-pointer">✕</button>
+          </div>
+          <!-- Messages -->
+          <div id="mentorMessages" class="flex-1 overflow-y-auto p-3.5 space-y-3 text-xs scrollbar-none">
+            <div class="flex items-start gap-2 max-w-[90%]">
+              <div class="w-6 h-6 rounded-full bg-indigo-600/30 text-indigo-400 flex items-center justify-center shrink-0 mt-0.5">✨</div>
+              <div class="p-2.5 rounded-2xl bg-slate-800 border border-slate-700/60 rounded-tl-sm text-slate-200">
+                <p>Hello Ali! I am your AI Mentor for the B2B Contract Template task. How can I assist your onboarding today?</p>
+                <div class="text-[9px] text-slate-400 mt-1">09:30 AM</div>
+              </div>
+            </div>
+          </div>
+          <!-- Quick Prompts -->
+          <div class="px-3 py-1.5 bg-slate-950/80 border-t border-slate-800/80 flex gap-1.5 overflow-x-auto whitespace-nowrap scrollbar-none shrink-0">
+            <button onclick="sendQuickPrompt('Where is the template?')" class="px-2.5 py-1 rounded-full bg-slate-800 text-[11px] text-indigo-300 border border-slate-700 hover:bg-slate-700 cursor-pointer">"Where is the template?"</button>
+            <button onclick="sendQuickPrompt('Draft contract outline')" class="px-2.5 py-1 rounded-full bg-slate-800 text-[11px] text-indigo-300 border border-slate-700 hover:bg-slate-700 cursor-pointer">"Draft contract outline"</button>
+            <button onclick="sendQuickPrompt('Explain clause 4')" class="px-2.5 py-1 rounded-full bg-slate-800 text-[11px] text-indigo-300 border border-slate-700 hover:bg-slate-700 cursor-pointer">"Explain clause 4"</button>
+          </div>
+          <!-- Input -->
+          <div class="p-2.5 bg-slate-950 border-t border-slate-800 flex items-center gap-2 shrink-0">
+            <input id="mentorInput" type="text" placeholder="Ask AI Mentor anything..." onkeydown="if(event.key==='Enter') sendMentorMessage()" class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500" />
+            <button onclick="sendMentorMessage()" class="p-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white cursor-pointer">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- VISION MODAL -->
+        <div id="visionModal" class="hidden absolute inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-xs p-4 shadow-2xl relative">
+            <button onclick="closeVisionModal()" class="absolute top-3 right-3 text-slate-400 hover:text-white cursor-pointer">✕</button>
+            <div class="flex items-center gap-2 mb-1">
+              <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center">📷</div>
+              <div>
+                <h3 class="font-bold text-white text-sm">AI Vision Verification</h3>
+                <p class="text-[10px] text-slate-400">POST /api/verify-proof</p>
+              </div>
+            </div>
+            <!-- Preview Box -->
+            <div class="mt-2 border-2 border-dashed border-slate-700 rounded-xl p-2.5 text-center bg-slate-950">
+              <img id="visionImagePreview" src="https://images.unsplash.com/photo-1568667256549-094345857637?auto=format&fit=crop&w=400&q=80" class="w-full h-28 object-cover rounded-lg border border-slate-700 mb-1" />
+              <div id="visionFilename" class="text-[10px] font-mono text-slate-300">sample_msa_clause4.pdf</div>
+            </div>
+            <!-- Test Scenario Switch -->
+            <div class="mt-2.5 p-2 bg-slate-950 rounded-lg border border-slate-800 flex items-center justify-between">
+              <div class="text-[10px]">
+                <span class="text-slate-400">Scenario:</span>
+                <span id="scenarioLabel" class="font-bold text-emerald-400 block">Valid Work Doc</span>
+              </div>
+              <button onclick="toggleScenario()" class="px-2 py-1 bg-slate-800 text-[10px] rounded text-slate-200 border border-slate-700 cursor-pointer">Switch</button>
+            </div>
+            <!-- Result Box -->
+            <div id="visionResultBox" class="hidden mt-2 p-2.5 rounded-xl text-xs"></div>
+            <!-- Action -->
+            <div class="mt-3 flex gap-2">
+              <button id="btnRunVision" onclick="runVisionCheck()" class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs shadow-lg shadow-emerald-600/30 cursor-pointer">Run AI Vision Check</button>
+              <button onclick="closeVisionModal()" class="py-2 px-3 bg-slate-800 text-slate-300 rounded-xl text-xs cursor-pointer">Close</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- DECOMPOSE MODAL -->
+        <div id="decomposeModal" class="hidden absolute inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-xs p-4 shadow-2xl relative">
+            <button onclick="closeDecomposeModal()" class="absolute top-3 right-3 text-slate-400 hover:text-white cursor-pointer">✕</button>
+            <div class="flex items-center gap-2 mb-2">
+              <div class="w-8 h-8 rounded-lg bg-indigo-600/20 text-indigo-400 flex items-center justify-center">🧩</div>
+              <div>
+                <h3 class="font-bold text-white text-sm">AI Task Decomposition</h3>
+                <p class="text-[9px] text-emerald-400 font-mono">POST /api/decompose-task</p>
+              </div>
+            </div>
+            <p class="text-[11px] text-slate-300 mb-2">Breakdown generated for <b class="text-white">"Prepare B2B Contract"</b>:</p>
+            <div id="decomposeSubtasks" class="space-y-1.5 max-h-48 overflow-y-auto scrollbar-none pr-1"></div>
+            <button onclick="closeDecomposeModal()" class="w-full mt-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold cursor-pointer">Done</button>
+          </div>
+        </div>
+
+        <!-- EXTENSION MODAL -->
+        <div id="extensionModal" class="hidden absolute inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-xs p-4 shadow-2xl relative">
+            <button onclick="closeExtensionModal()" class="absolute top-3 right-3 text-slate-400 hover:text-white cursor-pointer">✕</button>
+            <h3 class="font-bold text-white text-sm mb-1">Request AI Time Extension</h3>
+            <p class="text-[11px] text-slate-400 mb-3">AI evaluates inquiry density to grant +30 minutes extension.</p>
+            <div class="p-2.5 bg-slate-950 rounded-xl border border-slate-800 text-xs mb-3">
+              <div class="flex justify-between text-slate-300 mb-1">
+                <span>Inquiries Sent:</span>
+                <span class="font-mono text-indigo-400 font-bold">8 questions</span>
+              </div>
+              <div class="flex justify-between text-slate-300">
+                <span>Learning Status:</span>
+                <span class="font-mono text-emerald-400 font-bold">Verified Compliant</span>
+              </div>
+            </div>
+            <button onclick="grantExtension()" class="w-full py-2 bg-amber-600 hover:bg-amber-500 text-white rounded-xl text-xs font-bold cursor-pointer">Grant +30m Extension</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DESKTOP DASHBOARD VIEW -->
+    <section id="viewDesktop" class="hidden w-full flex-1 max-w-7xl mx-auto p-4 sm:p-6 space-y-6">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-900/60 p-4 rounded-2xl border border-slate-800 backdrop-blur-sm">
+        <div>
+          <h2 class="text-xl sm:text-2xl font-black text-white tracking-tight flex items-center gap-2">
+            Operations & Mentorship Control Center
+            <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 font-mono">Live Sync</span>
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-400 mt-0.5">Telemetry streams synchronized with backend at http://localhost:8000</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <button onclick="openAssignModal()" class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs sm:text-sm shadow-lg shadow-indigo-600/30 cursor-pointer">
+            <span>+ Assign New Task</span>
+          </button>
+          <button onclick="exportCsv()" class="flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-medium cursor-pointer">
+            <span>Export CSV</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- KPI METRICS -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-slate-900/90 rounded-2xl p-4 border border-slate-800">
+          <span class="text-xs font-medium text-slate-400">Active Employees Onboarding</span>
+          <div class="text-2xl font-black text-white mt-1">14 <span class="text-xs font-normal text-emerald-400 font-mono">+3 today</span></div>
+        </div>
+        <div class="bg-slate-900/90 rounded-2xl p-4 border border-slate-800">
+          <span class="text-xs font-medium text-slate-400">AI Verification Accuracy</span>
+          <div class="text-2xl font-black text-emerald-400 mt-1">98.4% <span class="text-xs font-normal text-slate-400 font-mono">Vision OCR</span></div>
+        </div>
+        <div class="bg-slate-900/90 rounded-2xl p-4 border border-slate-800">
+          <span class="text-xs font-medium text-slate-400">Mean Micro-Task Time</span>
+          <div class="text-2xl font-black text-white mt-1">42m <span class="text-xs font-normal text-indigo-400 font-mono">-18m vs cohort</span></div>
+        </div>
+        <div class="bg-slate-900/90 rounded-2xl p-4 border border-slate-800">
+          <span class="text-xs font-medium text-slate-400">Anti-Hoarding Compliance</span>
+          <div class="text-2xl font-black text-indigo-400 mt-1">100% <span class="text-xs font-normal text-emerald-400 font-mono">Lock Active</span></div>
+        </div>
+      </div>
+
+      <!-- TABLE & LEADERBOARD -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 bg-slate-900/80 rounded-2xl border border-slate-800 p-4">
+          <h3 class="font-bold text-white text-base mb-3">Onboarding Cohort Execution Tracker</h3>
+          <div class="overflow-x-auto">
+            <table class="w-full text-xs text-left">
+              <thead class="text-slate-400 border-b border-slate-800 font-mono">
+                <tr>
+                  <th class="py-2">Employee</th>
+                  <th>Task Title</th>
+                  <th>Progress</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800/60">
+                <tr>
+                  <td class="py-2.5 font-bold text-white">Ali Mammadov</td>
+                  <td class="text-slate-300">Prepare B2B Contract Template</td>
+                  <td><span id="aliTableProgress" class="font-mono text-indigo-400 font-bold">40%</span></td>
+                  <td><span class="px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">In Progress</span></td>
+                  <td><button onclick="grantMicroBonus('Ali Mammadov')" class="px-2 py-1 rounded bg-indigo-600/30 hover:bg-indigo-600 text-indigo-300 hover:text-white cursor-pointer">+25 XP</button></td>
+                </tr>
+                <tr>
+                  <td class="py-2.5 font-bold text-white">Eldar Hasanov</td>
+                  <td class="text-slate-300">Configure AWS IAM Security Roles</td>
+                  <td><span class="font-mono text-emerald-400 font-bold">100%</span></td>
+                  <td><span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">AI Verified</span></td>
+                  <td><button onclick="grantMicroBonus('Eldar Hasanov')" class="px-2 py-1 rounded bg-indigo-600/30 hover:bg-indigo-600 text-indigo-300 hover:text-white cursor-pointer">+25 XP</button></td>
+                </tr>
+                <tr>
+                  <td class="py-2.5 font-bold text-white">Gunel Rustamova</td>
+                  <td class="text-slate-300">Q3 Tax Ledger Invoicing Proof</td>
+                  <td><span class="font-mono text-rose-400 font-bold">60%</span></td>
+                  <td><span class="px-2 py-0.5 rounded bg-rose-500/10 text-rose-400 border border-rose-500/20">Flagged</span></td>
+                  <td><button onclick="resolveFlag('Gunel Rustamova')" class="px-2 py-1 rounded bg-rose-600/30 hover:bg-rose-600 text-rose-300 hover:text-white cursor-pointer">Resolve</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Leaderboard -->
+        <div class="bg-slate-900/80 rounded-2xl border border-slate-800 p-4 flex flex-col justify-between">
+          <div>
+            <div class="flex justify-between items-center mb-3">
+              <h3 class="font-bold text-white text-base">Gamification Leaderboard</h3>
+              <button onclick="awardMonthlyBonus()" class="px-2.5 py-1 bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded-lg text-xs font-bold cursor-pointer">🏆 Bonus</button>
+            </div>
+            <div class="space-y-2">
+              <div class="p-2.5 bg-slate-950 rounded-xl border border-amber-500/30 flex justify-between items-center text-xs">
+                <div>
+                  <span class="font-bold text-amber-300">#1 Eldar Hasanov</span>
+                  <div class="text-[10px] text-slate-400">IT Engineering</div>
+                </div>
+                <span class="font-mono font-bold text-emerald-400 text-sm">480 XP</span>
+              </div>
+              <div class="p-2.5 bg-slate-950 rounded-xl border border-slate-800 flex justify-between items-center text-xs">
+                <div>
+                  <span class="font-bold text-white">#2 Ali Mammadov</span>
+                  <div class="text-[10px] text-slate-400">Legal Ops</div>
+                </div>
+                <span id="aliLeaderboardXp" class="font-mono font-bold text-emerald-400 text-sm">350 XP</span>
+              </div>
+              <div class="p-2.5 bg-slate-950 rounded-xl border border-slate-800 flex justify-between items-center text-xs">
+                <div>
+                  <span class="font-bold text-white">#3 Gunel Rustamova</span>
+                  <div class="text-[10px] text-slate-400">Finance & Billing</div>
+                </div>
+                <span class="font-mono font-bold text-emerald-400 text-sm">310 XP</span>
+              </div>
+            </div>
+          </div>
+          <div class="mt-4 p-3 bg-indigo-950/30 border border-indigo-500/20 rounded-xl text-xs text-indigo-300">
+            Monthly Leader Bonus: <b>$150 Gift Card</b> awarded to top onboarder on month close!
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ASSIGN MODAL (Desktop) -->
+    <div id="assignModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+      <div class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-lg p-5 shadow-2xl relative">
+        <button onclick="closeAssignModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white cursor-pointer">✕</button>
+        <h3 class="font-bold text-white text-base mb-1">+ Assign New Micro-Task</h3>
+        <p class="text-xs text-slate-400 mb-3">Distribute workflow items with AI Mentorship parameters.</p>
+        <div class="space-y-3 text-xs">
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Task Title *</label>
+            <div class="flex gap-2">
+              <input id="assignTitleInput" type="text" value="Verify SOC-2 Data Subcontractor SLA" class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-indigo-500" />
+              <button onclick="handleModalDecompose()" class="px-3 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold flex items-center gap-1 shadow-md cursor-pointer shrink-0">
+                ✨ AI Decompose
+              </button>
+            </div>
+          </div>
+          <div id="modalDecomposeResults" class="hidden p-2.5 bg-slate-950 rounded-xl border border-indigo-500/30 space-y-1"></div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block font-semibold text-slate-300 mb-1">Category</label>
+              <select class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                <option>Legal Ops</option>
+                <option>Finance</option>
+                <option>IT Engineering</option>
+              </select>
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-300 mb-1">Assignee</label>
+              <select class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                <option>Ali Mammadov</option>
+                <option>Gunel Rustamova</option>
+                <option>Eldar Hasanov</option>
+              </select>
+            </div>
+          </div>
+          <div class="flex justify-end gap-2 pt-2">
+            <button onclick="closeAssignModal()" class="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 font-semibold cursor-pointer">Cancel</button>
+            <button onclick="submitNewTask()" class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold cursor-pointer">Create & Dispatch</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // State
+    let aliXp = 350;
+    let progressPercent = 40;
+    let isFakeScenario = false;
+    let remainingSeconds = 1 * 3600 + 24 * 60 + 7;
+
+    // Countdown
+    setInterval(() => {
+      if (remainingSeconds > 0) {
+        remainingSeconds--;
+        const hrs = Math.floor(remainingSeconds / 3600);
+        const mins = Math.floor((remainingSeconds % 3600) / 60);
+        const secs = remainingSeconds % 60;
+        const fmt = String(hrs).padStart(2,'0') + ':' + String(mins).padStart(2,'0') + ':' + String(secs).padStart(2,'0');
+        const el = document.getElementById('countdownTimer');
+        if (el) el.innerHTML = fmt + ' <span class="text-[10px] text-slate-400 font-normal">/ 02:30:00</span>';
+      }
+    }, 1000);
+
+    function showToast(title, msg, type = 'indigo') {
+      const c = document.getElementById('toastContainer');
+      const d = document.createElement('div');
+      d.className = 'p-3 rounded-xl border shadow-xl text-xs bg-slate-900 border-' + type + '-500/40 text-slate-100 flex items-start gap-2 animate-fade-in';
+      d.innerHTML = '<div><div class="font-bold text-' + type + '-400">' + title + '</div><div class="text-[11px] text-slate-300">' + msg + '</div></div>';
+      c.appendChild(d);
+      setTimeout(() => d.remove(), 4000);
+    }
+
+    function switchView(view) {
+      if (view === 'mobile') {
+        document.getElementById('viewMobile').classList.remove('hidden');
+        document.getElementById('viewDesktop').classList.add('hidden');
+        document.getElementById('btnSwitchMobile').className = 'flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-xs font-semibold bg-indigo-600 text-white shadow-md shadow-indigo-600/30 transition';
+        document.getElementById('btnSwitchDesktop').className = 'flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition';
+      } else {
+        document.getElementById('viewMobile').classList.add('hidden');
+        document.getElementById('viewDesktop').classList.remove('hidden');
+        document.getElementById('btnSwitchDesktop').className = 'flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-xs font-semibold bg-indigo-600 text-white shadow-md shadow-indigo-600/30 transition';
+        document.getElementById('btnSwitchMobile').className = 'flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition';
+      }
+    }
+
+    function updateProgress(val) {
+      progressPercent = val;
+      document.getElementById('sliderValueText').innerText = val + '% Completed';
+      document.getElementById('aliTableProgress').innerText = val + '%';
+    }
+
+    // AI MENTOR (/api/ask-mentor)
+    function openMentorDrawer() { document.getElementById('mentorDrawer').classList.remove('translate-y-full'); }
+    function closeMentorDrawer() { document.getElementById('mentorDrawer').classList.add('translate-y-full'); }
+
+    async function sendMentorMessage() {
+      const inp = document.getElementById('mentorInput');
+      const text = inp.value.trim();
+      if (!text) return;
+      inp.value = '';
+      appendChatMessage('user', text);
+
+      // Typing indicator
+      const typingEl = document.createElement('div');
+      typingEl.id = 'typingIndicator';
+      typingEl.className = 'flex items-center gap-2 text-xs text-indigo-400 p-2 bg-indigo-950/30 rounded-xl border border-indigo-500/20';
+      typingEl.innerHTML = '<span class="animate-spin">✨</span> <span>Fetching /api/ask-mentor...</span>';
+      document.getElementById('mentorMessages').appendChild(typingEl);
+
+      try {
+        const res = await fetch('http://localhost:8000/api/ask-mentor', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: text, taskTitle: 'Prepare B2B Contract Template' })
+        });
+        typingEl.remove();
+        if (res.ok) {
+          const data = await res.json();
+          appendChatMessage('ai', data.reply || data.answer || data.message || data.text || 'Response received.');
+          showToast('AI Mentor', 'Response received via http://localhost:8000/api/ask-mentor', 'indigo');
+        } else {
+          throw new Error('HTTP ' + res.status);
+        }
+      } catch (err) {
+        typingEl.remove();
+        appendChatMessage('ai', '[Offline Fallback • http://localhost:8000/api/ask-mentor]\nClause 4 specifies a 99.9% uptime SLA with a 5% service credit. Reference Annex C for escalation protocols!');
+        showToast('Backend Offline', 'Could not reach http://localhost:8000/api/ask-mentor. Local response supplied.', 'amber');
+      }
+    }
+
+    function sendQuickPrompt(t) {
+      document.getElementById('mentorInput').value = t;
+      sendMentorMessage();
+    }
+
+    function appendChatMessage(sender, text) {
+      const c = document.getElementById('mentorMessages');
+      const d = document.createElement('div');
+      const isUser = sender === 'user';
+      d.className = 'flex items-start gap-2 ' + (isUser ? 'justify-end ml-auto max-w-[85%]' : 'max-w-[90%]');
+      d.innerHTML = isUser
+        ? '<div class="p-2.5 rounded-2xl bg-indigo-600 text-white rounded-tr-sm">' + text + '</div>'
+        : '<div class="w-6 h-6 rounded-full bg-indigo-600/30 text-indigo-400 flex items-center justify-center shrink-0 mt-0.5">🤖</div><div class="p-2.5 rounded-2xl bg-slate-800 border border-slate-700/60 rounded-tl-sm text-slate-200 whitespace-pre-line">' + text + '</div>';
+      c.appendChild(d);
+      c.scrollTop = c.scrollHeight;
+    }
+
+    // AI VISION (/api/verify-proof)
+    function openVisionModal() { document.getElementById('visionModal').classList.remove('hidden'); }
+    function closeVisionModal() { document.getElementById('visionModal').classList.add('hidden'); document.getElementById('visionResultBox').classList.add('hidden'); }
+
+    function toggleScenario() {
+      isFakeScenario = !isFakeScenario;
+      document.getElementById('scenarioLabel').innerText = isFakeScenario ? 'Fake / Cat Meme' : 'Valid Work Doc';
+      document.getElementById('scenarioLabel').className = isFakeScenario ? 'font-bold text-rose-400 block' : 'font-bold text-emerald-400 block';
+      document.getElementById('visionImagePreview').src = isFakeScenario
+        ? 'https://images.unsplash.com/photo-1518791841217-8f162f1e1131?auto=format&fit=crop&w=400&q=80'
+        : 'https://images.unsplash.com/photo-1568667256549-094345857637?auto=format&fit=crop&w=400&q=80';
+      document.getElementById('visionFilename').innerText = isFakeScenario ? 'funny_cat.png' : 'sample_msa_clause4.pdf';
+      document.getElementById('visionResultBox').classList.add('hidden');
+    }
+
+    async function runVisionCheck() {
+      const btn = document.getElementById('btnRunVision');
+      btn.innerText = 'Calling /api/verify-proof...';
+      btn.disabled = true;
+
+      const resBox = document.getElementById('visionResultBox');
+      resBox.classList.remove('hidden');
+
+      try {
+        const res = await fetch('http://localhost:8000/api/verify-proof', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ isFakeScenario, taskTitle: 'Prepare B2B Contract Template' })
+        });
+        btn.innerText = 'Run AI Vision Check';
+        btn.disabled = false;
+
+        if (res.ok) {
+          const data = await res.json();
+          if (data.verified || data.status === 'success') {
+            resBox.className = 'mt-2 p-2.5 rounded-xl text-xs bg-emerald-500/15 border border-emerald-500/40 text-emerald-300';
+            resBox.innerHTML = '<b>Verified!</b> ' + (data.message || 'Clause 4 OCR detected.') + ' Confidence: ' + (data.confidence || '96.4%') + '<br><b>+50 XP Awarded!</b>';
+            confetti({ particleCount: 50, spread: 60 });
+            aliXp += 50;
+            document.getElementById('mobileXpDisplay').innerText = aliXp + ' XP';
+            document.getElementById('aliLeaderboardXp').innerText = aliXp + ' XP';
+          } else {
+            resBox.className = 'mt-2 p-2.5 rounded-xl text-xs bg-rose-500/15 border border-rose-500/40 text-rose-300';
+            resBox.innerHTML = '<b>Fraud Alert!</b> ' + (data.message || 'Non-compliant image.') + '<br>Flagged for review.';
+          }
+        } else {
+          throw new Error('HTTP ' + res.status);
+        }
+      } catch (err) {
+        btn.innerText = 'Run AI Vision Check';
+        btn.disabled = false;
+        if (!isFakeScenario) {
+          resBox.className = 'mt-2 p-2.5 rounded-xl text-xs bg-emerald-500/15 border border-emerald-500/40 text-emerald-300';
+          resBox.innerHTML = '<b>Verified (Offline fallback)!</b> Clause 4 detected (96.4%).<br><b>+50 XP Awarded!</b>';
+          confetti({ particleCount: 50, spread: 60 });
+          aliXp += 50;
+          document.getElementById('mobileXpDisplay').innerText = aliXp + ' XP';
+          document.getElementById('aliLeaderboardXp').innerText = aliXp + ' XP';
+        } else {
+          resBox.className = 'mt-2 p-2.5 rounded-xl text-xs bg-rose-500/15 border border-rose-500/40 text-rose-300';
+          resBox.innerHTML = '<b>Fraud Alert (Offline fallback)!</b> Non-contract image flagged for review.';
+        }
+      }
+    }
+
+    // AI DECOMPOSE (/api/decompose-task)
+    async function triggerDecomposeTask() {
+      document.getElementById('decomposeModal').classList.remove('hidden');
+      const box = document.getElementById('decomposeSubtasks');
+      box.innerHTML = '<div class="text-xs text-indigo-400 p-2 animate-pulse">Fetching /api/decompose-task...</div>';
+
+      try {
+        const res = await fetch('http://localhost:8000/api/decompose-task', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title: 'Prepare B2B Contract Template', category: 'Legal Ops' })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          renderDecomposedList(box, data.tasks || data.microTasks || data.subtasks || data.steps);
+        } else {
+          throw new Error('HTTP ' + res.status);
+        }
+      } catch (err) {
+        renderDecomposedList(box, [
+          { title: 'Ingest and verify MSA Clause 4 boilerplate', xpReward: 15 },
+          { title: 'Check SOC-2 vendor SLA annex definitions', xpReward: 25 },
+          { title: 'Generate PDF proof for AI Vision verification', xpReward: 10 }
+        ]);
+        showToast('Backend Offline', 'Local micro-tasks breakdown displayed.', 'amber');
+      }
+    }
+
+    function renderDecomposedList(box, items) {
+      box.innerHTML = '';
+      const list = items || [
+        { title: 'Step 1: Ingest contract specifications', xpReward: 15 },
+        { title: 'Step 2: Cross-reference SOC-2 Clause 4', xpReward: 25 },
+        { title: 'Step 3: Submit snapshot proof for inspection', xpReward: 10 }
+      ];
+      list.forEach((st, i) => {
+        const title = typeof st === 'string' ? st : st.title;
+        const xp = st.xpReward || 15;
+        const d = document.createElement('div');
+        d.className = 'p-2 bg-slate-950 rounded-lg border border-slate-800 text-[11px] flex items-center justify-between';
+        d.innerHTML = '<span class="text-slate-200 truncate mr-1">' + (i+1) + '. ' + title + '</span><span class="text-emerald-400 font-mono font-bold">+' + xp + 'XP</span>';
+        box.appendChild(d);
+      });
+    }
+
+    function closeDecomposeModal() { document.getElementById('decomposeModal').classList.add('hidden'); }
+
+    // EXTENSION
+    function openExtensionModal() { document.getElementById('extensionModal').classList.remove('hidden'); }
+    function closeExtensionModal() { document.getElementById('extensionModal').classList.add('hidden'); }
+    function grantExtension() {
+      remainingSeconds += 1800;
+      closeExtensionModal();
+      showToast('Extension Granted!', 'AI Mentor added +30 minutes.', 'amber');
+    }
+
+    // DESKTOP ACTIONS
+    function openAssignModal() { document.getElementById('assignModal').classList.remove('hidden'); }
+    function closeAssignModal() { document.getElementById('assignModal').classList.add('hidden'); }
+
+    async function handleModalDecompose() {
+      const title = document.getElementById('assignTitleInput').value;
+      const box = document.getElementById('modalDecomposeResults');
+      box.classList.remove('hidden');
+      box.innerHTML = '<div class="text-[11px] text-indigo-400 animate-pulse">Calling /api/decompose-task...</div>';
+
+      try {
+        const res = await fetch('http://localhost:8000/api/decompose-task', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, category: 'Legal Ops' })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          renderDecomposedList(box, data.tasks || data.subtasks || data.steps);
+        } else {
+          throw new Error('HTTP ' + res.status);
+        }
+      } catch (err) {
+        renderDecomposedList(box, [
+          { title: 'Review SLA terms for ' + title, xpReward: 20 },
+          { title: 'Generate compliance audit report', xpReward: 30 }
+        ]);
+      }
+    }
+
+    function submitNewTask() {
+      const title = document.getElementById('assignTitleInput').value;
+      closeAssignModal();
+      showToast('Task Dispatched!', '"' + title + '" assigned with Anti-Hoarding lock.', 'indigo');
+    }
+
+    function grantMicroBonus(name) {
+      if (name.includes('Ali')) {
+        aliXp += 25;
+        document.getElementById('mobileXpDisplay').innerText = aliXp + ' XP';
+        document.getElementById('aliLeaderboardXp').innerText = aliXp + ' XP';
+      }
+      showToast('Bonus Awarded!', '+25 XP micro-bonus granted to ' + name, 'indigo');
+    }
+
+    function resolveFlag(name) {
+      showToast('Flag Cleared', 'Compliance verification resolved for ' + name, 'emerald');
+    }
+
+    function awardMonthlyBonus() {
+      confetti({ particleCount: 70, spread: 80 });
+      showToast('Bonus Dispatched!', '$150 Gift Card awarded to #1 Eldar Hasanov!', 'amber');
+    }
+
+    function exportCsv() {
+      const csv = "data:text/csv;charset=utf-8,Timestamp,Event,Details\n" + new Date().toISOString() + ",Audit,Export generated successfully";
+      const a = document.createElement('a');
+      a.href = encodeURI(csv);
+      a.download = 'TaskMentor_Audit_Report.csv';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      showToast('CSV Downloaded', 'Audit report exported successfully.', 'indigo');
+    }
+  </script>
+</body>
+</html>
